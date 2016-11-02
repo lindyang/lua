@@ -1,0 +1,203 @@
+a = io.read("*n")
+a = 1 b = a * 2  - ugly, but valid
+lua -i hello.lua
+dofile("hello.lua")
+
+avoid identifiers starting with an underscore followed by one or more upper-case
+
+local
+elseif
+repeat
+then  # TODO
+
+--[[
+  block comment
+--]]
+
+---[[
+  uncomment
+--]]
+
+print(b)  --> nil
+
+#!/usr/local/bin/lua
+#!/usr/local/env lua
+
+lua -i -llib -e "X = 10"
+
+LUA_INIT_5_2, LUA_INIT
+
+lua -e "sin=math.sin" script a b
+arg[-3] = "lua"
+arg[-2] = "-e"
+arg[-1] = "sin=math.sin"
+arg[0] = "script"
+arg[1] = a
+arg[2] = b
+
+nil, boolean, number, string, userdata, function, thread, table
+* userdata
+* thread
+* table
+type()  -- string
+
+false and nil as false
+
+Numbers
+    双精度, no integer type
+    representation error
+    双精度表示整形没有 rounding error, 除非整形数大于 2^53
+    fractional numbers can have representation errors
+
+string.gsub(a, "pattern", "replace")
+支持 unicode
+print(#a)  -- string a's length
+\ddd \xhh
+"alo\n123" == '\97lo\10\04923'
+'\x61...'
+
+Long strings
+    do not interpret escape sequences
+    gnores the first  character  of  the  string  when  this  character  is  a  newline
+
+    --[===[
+    ]===]
+    
+    \r\n may change to \n when read, better to code arbitrary binary data using \ddd, \xhh,
+    to avoid long strings use \z, it skips all subsequent characters in the string until the
+    first non-space character.
+    data = "\x00\x07\z
+            \x08"
+    
+Coercions(前置转换)
+    number operation applied to sting, tries to convert string to number
+    print("hello" + 1)  -- Error
+    print("1" + "1")  -- 2
+    such coercions happen when expect a number, for example math.sin
+    when expect stirng, then convert number to string
+    
+.. string concatenation
+.. right after a number, must separate them with a space, otherwise tread as decimal point
+10 == "10" is false, they are diffent things
+
+tonumber, return nil if failed
+line = io.read()  -- read a line
+tostring
+tostring(10) == "10"
+10 .. "" == "10"
+
+associative arrays is an array that can be indexed not only with numbers, buts also with strings or any other value of language, except nil.
+
+    ordinary arrays
+    sets
+    recoreds
+    packages
+    objects
+
+io.read, index the table io using the string read as the key
+
+a = {}
+for i = 1, 1000 do a[i] = i * 2 end
+like global variables, table field evaluate to nil when not initialized
+a.name is a["name"]
+a.x = 10  -- a["x"] = 10
+a.x  -- a["x"]
+
+Lua start arrays with one
+list without holes a sequence
+for i = 1, #a; do print(a[i]) end
+
+a % b = a - math.floor(a/b) * b
+
+~=  negation of equality
+
+compare tables, userdata by reference
+a = {}; a.x =1; a.y = 0
+b = {}; b.x =1; b.y = 0
+c = a
+a == c but a ~= b
+
+and operator returns its first argument if it is false
+or operator returns its first argument if it is not false
+
+x = x or v  -- if not x then x = v end
+a and b or c  -- a?b:c
+
+print(000 .. 01)  -- 01
+print(a[#a])
+a[#a] = nil
+a[#a + 1] = v
+a = {10, 20, 30, nil, nil}  -- {10, 20, 30}
+
+All binary operators are left associative, except for '^'(exp) and '..'
+x.f[1]  -- x["f"][1]
+
+polyline = {color="blue",
+    thickness=2,
+    {x=0, y=0},  -- polyline[1]
+}
+
+opnames = {["+"] = "add", ["-"] = "sub", ["*"] = "mul", ["/"] = "div"}
+
+semicolon  -- {x=10, y=45, "one", "two", "three"}
+t = {sunday="monday"}
+t["sunday"] == "monday"
+
+a, b = 10, 2*x
+x, y = y, x  -- swap 'x' for 'y'
+receive nil, discard
+a, b, c = 0, 1  -- 0, 1, nil
+a, b = a+1, b+1, b+2  -- discard b+2
+
+multiple assignment is not faster than its equivalent single assignments.
+
+j = 10  -- global
+local i = 1  -- local
+
+x = 10
+local i = 1
+while i < = x do
+    local x = i * 2  -- local to the while body
+    i = i + 1
+end
+
+if i > 20 then
+    local x
+    x = 20  -- local to the "then" body
+    print(x + 2)  -- (would print 22 if test succeeded)
+else
+    print(x)   -- the global one
+end
+print(x)  -- global
+
+interactive mode, use do-end
+access to local variables is faster than to global ones.
+local a  -- '= nil' is implicit
+local foo = foo
+
+until terminates repeat structures.
+
+elseif then
+
+
+
+ 
+
+*a reads the whole file
+*l reads the next line (without newline)
+*L
+*n
+
+32. Memory Management
+    allocation function (low level)
+    parameters that control garbage collector (high level)
+
+malloc, realloc
+luaL_newstate create states
+malloc-realloc-free
+lua_newstate
+
+lua_State *lua_newstate(lua_Alloc f, void *ud);
+typedef void * (*lua_Alloc) (void *ud, void *ptr, size_t osize, size_t nsize);
+nsize == 0 free(ptr)
+ptr == NULL ptr = malloc(nsize)
